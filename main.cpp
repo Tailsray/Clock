@@ -1,15 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <time.h>
+#include <cmath>
+#include <iostream>
 
 int main()
 {
+  const float pi = 3.14159265;
+
   sf::RenderWindow clockWindow(sf::VideoMode(600, 600), "Clock   by Tailsray", sf::Style::Close);
 
   time_t cloc;
-  int hour = 0;
-  int minute = 0;
-  int second = 0;
+  int hour, minute, second;
 
   sf::Font timefont;
   timefont.loadFromFile("Hack.ttf");
@@ -20,7 +22,29 @@ int main()
   timer.setCharacterSize(50);
   timer.setFillColor(sf::Color::White);
 
-  sf::CircleShape outliner(205.f, 360);
+  sf::VertexArray smallClockStripes(sf::Lines, 96);
+  for (int i = 0; i < 12; i++)
+    for (int x = 0; x < 4; x++)
+    {
+      float angle = (5.f * i + (float)x + 1.f) / 30 * pi;
+      smallClockStripes[2 * (4 * i + x)].color = sf::Color::White;
+      smallClockStripes[2 * (4 * i + x)].position = sf::Vector2f(300.f + 200.f * cos(angle), 300.f - 200.f * sin(angle));
+      smallClockStripes[2 * (4 * i + x) + 1].color = sf::Color::White;
+      smallClockStripes[2 * (4 * i + x) + 1].position = sf::Vector2f(300.f + 190.f * cos(angle), 300.f - 190.f * sin(angle));
+    }
+
+  sf::RectangleShape bigClockStripes[12];
+  for (int i = 0; i < 12; i++)
+  {
+    float angle = (float)i / 6 * pi;
+    bigClockStripes[i].setSize(sf::Vector2f(4.f, 16.f));
+    bigClockStripes[i].setFillColor(sf::Color::White);
+    bigClockStripes[i].setOrigin(2.f, 8.f);
+    bigClockStripes[i].setPosition(300.f + 192.f * cos(angle - pi / 2), 300.f - 192.f * sin(angle - pi / 2));
+    bigClockStripes[i].setRotation(i * -30.f);
+  }
+
+  sf::CircleShape outliner(205.f, 360); //the first argument is radius, the second one is number of vertices
   outliner.setFillColor(sf::Color::Blue);
   outliner.setOutlineThickness(5);
   outliner.setOutlineColor(sf::Color::White);
@@ -36,12 +60,6 @@ int main()
   hourPointer.setFillColor(sf::Color::White);
   hourPointer.setOutlineThickness(1);
   hourPointer.setOutlineColor(sf::Color::Black);
-
-  sf::ConvexShape linee;
-  linee.setPointCount(2);
-  linee.setPoint(0, sf::Vector2f(50.f, 50.f));
-  linee.setPoint(1, sf::Vector2f(200.f, 200.f));
-  linee.setFillColor(sf::Color::White);
 
   sf::ConvexShape minutePointer;
   minutePointer.setPointCount(3);
@@ -69,7 +87,7 @@ int main()
         clockWindow.close();
 
     cloc = time(NULL);
-    hour = ((cloc % 86400) / 3600 + 3) % 24; //+3 надо поменять на +часовой_пояс, сами часовые пояса потом добавить
+    hour = ((cloc % 86400) / 3600 + 3) % 24; //+3 should be changed to +timezone, timezones themselves are to be added later
     minute = (cloc % 3600) / 60;
     second = cloc % 60;
     hourPointer.setRotation(hour * 30.f);
@@ -82,6 +100,9 @@ int main()
     clockWindow.clear(sf::Color::Blue);
     clockWindow.draw(timer);
     clockWindow.draw(outliner);
+    clockWindow.draw(smallClockStripes);
+    for (int i = 0; i < 12; i++)
+      clockWindow.draw(bigClockStripes[i]);
     clockWindow.draw(secondPointer);
     clockWindow.draw(minutePointer);
     clockWindow.draw(hourPointer);
