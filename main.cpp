@@ -6,8 +6,6 @@
 
 int main()
 {
-  const float pi = 3.14159265;
-
   sf::RenderWindow clockWindow(sf::VideoMode(600, 600), "Clock   by Tailsray", sf::Style::Close);
 
   time_t cloc;
@@ -26,7 +24,7 @@ int main()
   for (int i = 0; i < 12; i++)
     for (int x = 0; x < 4; x++)
     {
-      float angle = (5.f * i + (float)x + 1.f) / 30 * pi;
+      float angle = (5.f * i + (float)x + 1.f) / 30 * M_PI;
       smallClockStripes[2 * (4 * i + x)].color = sf::Color::White;
       smallClockStripes[2 * (4 * i + x)].position = sf::Vector2f(300.f + 200.f * cos(angle), 300.f - 200.f * sin(angle));
       smallClockStripes[2 * (4 * i + x) + 1].color = sf::Color::White;
@@ -36,11 +34,11 @@ int main()
   sf::RectangleShape bigClockStripes[12];
   for (int i = 0; i < 12; i++)
   {
-    float angle = (float)i / 6 * pi;
+    float angle = (float)i / 6 * M_PI;
     bigClockStripes[i].setSize(sf::Vector2f(4.f, 16.f));
     bigClockStripes[i].setFillColor(sf::Color::White);
     bigClockStripes[i].setOrigin(2.f, 8.f);
-    bigClockStripes[i].setPosition(300.f + 192.f * cos(angle - pi / 2), 300.f - 192.f * sin(angle - pi / 2));
+    bigClockStripes[i].setPosition(300.f + 192.f * cos(angle - M_PI / 2), 300.f - 192.f * sin(angle - M_PI / 2));
     bigClockStripes[i].setRotation(i * -30.f);
   }
 
